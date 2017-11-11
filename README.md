@@ -18,7 +18,7 @@ type Job interface {
 
 The implementing struct can contain whatever additional fields it needs to perform the job, as seen in the example below.
 
-This package is strongly inspired by [Marcio Castilho's article](http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang/).
+This package is strongly inspired by Marcio Castilho's blog post, [Handling 1 Million Requests per Minute with Go](http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang/).
 
 ## Example
 

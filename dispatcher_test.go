@@ -2,9 +2,8 @@ package minion_test
 
 import (
 	"sync"
-	"testing"
-
 	"sync/atomic"
+	"testing"
 
 	"github.com/jsvensson/minion"
 	"github.com/stretchr/testify/assert"
