@@ -1,5 +1,10 @@
 # Minion
 
+[![GoDoc](https://godoc.org/github.com/jsvensson/minion?status.svg)](https://godoc.org/github.com/jsvensson/minion)
+[![Build Status](https://travis-ci.org/jsvensson/minion.svg?branch=master)](https://travis-ci.org/jsvensson/minion)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jsvensson/minion)](https://goreportcard.com/report/github.com/jsvensson/minion)
+[![codecov](https://codecov.io/gh/jsvensson/minion/branch/master/graph/badge.svg)](https://codecov.io/gh/jsvensson/minion)
+
 **Minion** 🍌 is a worker/dispatcher package for distributing jobs across a number of workers. The dispatcher creates the workers and returns a buffered channel of a given length that is used as the job queue. The incoming jobs are distributed to the available workers.
 
 A job is created by implementing the `Job` interface:
