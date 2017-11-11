@@ -1,3 +1,5 @@
+// Package minion is a worker/dispatcher package for distributing jobs across a number of workers. Jobs are created
+// by implementing the Job interface.
 package minion
 
 // Dispatcher contains a worker pool and dispatches jobs to available workers.

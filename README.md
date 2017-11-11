@@ -1,6 +1,6 @@
 # Minion
 
-**Minion** is a worker/dispatcher package for distributing jobs across a number of workers. The dispatcher creates the workers and returns a buffered channel of a given length that is used as the job queue. The incoming jobs are distributed to the available workers.
+**Minion** 🍌 is a worker/dispatcher package for distributing jobs across a number of workers. The dispatcher creates the workers and returns a buffered channel of a given length that is used as the job queue. The incoming jobs are distributed to the available workers.
 
 A job is created by implementing the `Job` interface:
 

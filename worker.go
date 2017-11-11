@@ -1,6 +1,7 @@
 package minion
 
-// Job describes a job to perform.
+// Job describes a job to perform. The implementing struct can contain whatever additional fields
+// it requires to perform its job when Perform() runs.
 type Job interface {
 	// Perform runs the job.
 	Perform()
@@ -13,7 +14,7 @@ type Worker struct {
 	quit       chan bool
 }
 
-// NewWorker creates a new worker.
+// NewWorker creates a new worker connected to the provided worker pool.
 func NewWorker(pool chan chan Job) Worker {
 	return Worker{
 		WorkerPool: pool,
