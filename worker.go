@@ -9,16 +9,16 @@ type Job interface {
 
 // Worker waits for incoming jobs on its channel and performs them.
 type Worker struct {
-	WorkerPool chan chan Job
-	JobChannel chan Job
+	workerPool chan chan Job
+	jobChannel chan Job
 	quit       chan bool
 }
 
 // NewWorker creates a new worker connected to the provided worker pool.
 func NewWorker(pool chan chan Job) Worker {
 	return Worker{
-		WorkerPool: pool,
-		JobChannel: make(chan Job),
+		workerPool: pool,
+		jobChannel: make(chan Job),
 		quit:       make(chan bool),
 	}
 }
@@ -28,10 +28,10 @@ func (w Worker) Start() {
 	go func() {
 		for {
 			// Register worker in pool
-			w.WorkerPool <- w.JobChannel
+			w.workerPool <- w.jobChannel
 
 			select {
-			case job := <-w.JobChannel:
+			case job := <-w.jobChannel:
 				job.Perform()
 			case <-w.quit:
 				return

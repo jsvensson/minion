@@ -6,7 +6,7 @@ package minion
 
 // Dispatcher contains a worker pool and dispatches jobs to available workers.
 type Dispatcher struct {
-	WorkerPool chan chan Job
+	workerPool chan chan Job
 	jobQueue   chan Job
 	maxWorkers int
 	quit       chan bool
@@ -17,7 +17,7 @@ func NewDispatcher(workers, queueSize int) (*Dispatcher, chan<- Job) {
 	queue := make(chan Job, queueSize)
 
 	dispatcher := &Dispatcher{
-		WorkerPool: make(chan chan Job, workers),
+		workerPool: make(chan chan Job, workers),
 		jobQueue:   queue,
 		maxWorkers: workers,
 		quit:       make(chan bool),
@@ -29,7 +29,7 @@ func NewDispatcher(workers, queueSize int) (*Dispatcher, chan<- Job) {
 // Run starts the dispatcher.
 func (d *Dispatcher) Run() {
 	for i := 0; i < d.maxWorkers; i++ {
-		worker := NewWorker(d.WorkerPool)
+		worker := NewWorker(d.workerPool)
 		worker.Start()
 	}
 
@@ -47,7 +47,7 @@ func (d *Dispatcher) dispatch() {
 	for {
 		select {
 		case job := <-d.jobQueue:
-			jobChan := <-d.WorkerPool
+			jobChan := <-d.workerPool
 			jobChan <- job
 		case <-d.quit:
 			return
