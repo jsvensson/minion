@@ -32,7 +32,8 @@ func (d *Dispatcher) Run() {
 	go d.dispatch()
 }
 
-// Stop stops the dispatcher. Any currently running workers will finish their current job.
+// Stop stops the dispatcher, preventing it from accepting new jobs. Any jobs currently in the job queue will continue
+// to be dispatched to workers until the job queue is empty.
 func (d *Dispatcher) Stop() {
 	go func() {
 		d.quit <- true

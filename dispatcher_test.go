@@ -5,8 +5,6 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"time"
-
 	"github.com/jsvensson/minion"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -25,7 +23,6 @@ type TestJob struct {
 // Perform increments the test counter.
 func (tj TestJob) Perform() {
 	atomic.AddUint64(tj.counter, 1)
-	time.Sleep(20 * time.Millisecond)
 	tj.wg.Done()
 }
 
@@ -87,7 +84,7 @@ func (t *MinionTestSuite) TestTryEnqueueBlockedJob() {
 
 	wg := &sync.WaitGroup{}
 
-	// Fist call gets enqueued
+	// First call gets enqueued
 	wg.Add(1)
 	enqueued := disp.TryEnqueue(TestJob{wg, t.counter})
 	assert.True(t.T(), enqueued, "first job should not be blocked")
