@@ -22,7 +22,7 @@ func NewDispatcher(workers, queueSize int) *Dispatcher {
 	}
 }
 
-// Run starts the dispatcher.
+// Run starts the dispatcher. This function does not block.
 func (d *Dispatcher) Run() {
 	for i := 0; i < d.maxWorkers; i++ {
 		worker := NewWorker(d.workerPool)

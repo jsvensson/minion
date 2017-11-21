@@ -43,7 +43,10 @@ The job enqueueing can be either blocking or non-blocking, as required. The non-
 dispatcher.Enqueue(job)
 
 // Non-blocking call
-blocked := dispatcher.TryEnqueue(job)
+if ok := dispatcher.TryEnqueue(job); !ok {
+    // Job queue is full
+    return http.StatusServiceUnavailable
+}
 ```
 
 ## Example
