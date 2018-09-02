@@ -42,7 +42,5 @@ func (w Worker) Start() {
 
 // Stop stops the worker.
 func (w Worker) Stop() {
-	go func() {
-		w.quit <- true
-	}()
+	w.quit <- true
 }

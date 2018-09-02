@@ -35,9 +35,7 @@ func (d *Dispatcher) Run() {
 // Stop stops the dispatcher, preventing it from accepting new jobs. Any jobs currently in the job queue will continue
 // to be dispatched to workers until the job queue is empty.
 func (d *Dispatcher) Stop() {
-	go func() {
-		d.quit <- true
-	}()
+	d.quit <- true
 }
 
 // Enqueue adds a job to the job queue. If the queue is full, the function will block until the queue has slots
