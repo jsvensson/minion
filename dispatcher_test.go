@@ -35,13 +35,13 @@ func (t *MinionTestSuite) SetupTest() {
 }
 
 func (t *MinionTestSuite) TestEnqueueSingleJob() {
-	disp := minion.NewDispatcher(1, 1)
-	disp.Run()
+	d := minion.NewDispatcher(1, 1)
+	d.Start()
 
 	wg := &sync.WaitGroup{}
 
 	wg.Add(1)
-	disp.Enqueue(TestJob{wg, t.counter})
+	d.Enqueue(TestJob{wg, t.counter})
 	wg.Wait()
 
 	actual := atomic.LoadUint64(t.counter)
@@ -49,14 +49,14 @@ func (t *MinionTestSuite) TestEnqueueSingleJob() {
 }
 
 func (t *MinionTestSuite) TestEnqueueManyJobs() {
-	disp := minion.NewDispatcher(3, 10)
-	disp.Run()
+	d := minion.NewDispatcher(3, 10)
+	d.Start()
 
 	wg := &sync.WaitGroup{}
 
 	for i := 0; i < 50; i++ {
 		wg.Add(1)
-		disp.Enqueue(TestJob{wg, t.counter})
+		d.Enqueue(TestJob{wg, t.counter})
 	}
 
 	wg.Wait()
@@ -66,13 +66,13 @@ func (t *MinionTestSuite) TestEnqueueManyJobs() {
 }
 
 func (t *MinionTestSuite) TestTryEnqueueSingleJob() {
-	disp := minion.NewDispatcher(1, 1)
-	disp.Run()
+	d := minion.NewDispatcher(1, 1)
+	d.Start()
 
 	wg := &sync.WaitGroup{}
 
 	wg.Add(1)
-	disp.TryEnqueue(TestJob{wg, t.counter})
+	d.TryEnqueue(TestJob{wg, t.counter})
 	wg.Wait()
 
 	actual := atomic.LoadUint64(t.counter)
@@ -80,20 +80,20 @@ func (t *MinionTestSuite) TestTryEnqueueSingleJob() {
 }
 
 func (t *MinionTestSuite) TestTryEnqueueBlockedJob() {
-	disp := minion.NewDispatcher(1, 1)
+	d := minion.NewDispatcher(1, 1)
 
 	wg := &sync.WaitGroup{}
 
 	// First call gets enqueued
 	wg.Add(1)
-	enqueued := disp.TryEnqueue(TestJob{wg, t.counter})
+	enqueued := d.TryEnqueue(TestJob{wg, t.counter})
 	assert.True(t.T(), enqueued, "first job should not be blocked")
 
 	// Second call never gets enqueued
-	enqueued = disp.TryEnqueue(TestJob{wg, t.counter})
+	enqueued = d.TryEnqueue(TestJob{wg, t.counter})
 	assert.False(t.T(), enqueued, "second job should be blocked")
 
-	disp.Run()
+	d.Start()
 
 	wg.Wait()
 	actual := atomic.LoadUint64(t.counter)
