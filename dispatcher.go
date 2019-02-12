@@ -10,18 +10,21 @@ import (
 
 // Dispatcher contains a worker pool and dispatches jobs to available workers.
 type Dispatcher struct {
-	workerPool chan chan Job
-	jobQueue   chan Job
+	workerPool chan chan interface{}
+	jobQueue   chan interface{}
 	maxWorkers int
+	handler    func(interface{})
 	tomb       *tomb.Tomb
 }
 
 // NewDispatcher creates a new work dispatcher with the provided number of workers and buffer size for the job queue.
-func NewDispatcher(workers, queueSize int) *Dispatcher {
+// The handler function receives the job data and processes it.
+func NewDispatcher(handler func(interface{}), workers, queueSize int) *Dispatcher {
 	return &Dispatcher{
-		workerPool: make(chan chan Job, workers),
-		jobQueue:   make(chan Job, queueSize),
+		workerPool: make(chan chan interface{}, workers),
+		jobQueue:   make(chan interface{}, queueSize),
 		maxWorkers: workers,
+		handler:    handler,
 		tomb:       &tomb.Tomb{},
 	}
 }
@@ -29,7 +32,7 @@ func NewDispatcher(workers, queueSize int) *Dispatcher {
 // Start starts the dispatcher. This function does not block.
 func (d *Dispatcher) Start() {
 	for i := 0; i < d.maxWorkers; i++ {
-		worker := NewWorker(d.workerPool, d.tomb)
+		worker := NewWorker(d.handler, d.workerPool, d.tomb)
 		d.tomb.Go(worker.Run)
 	}
 
@@ -39,20 +42,19 @@ func (d *Dispatcher) Start() {
 // Stop stops the dispatcher, preventing it from accepting new jobs. Any jobs currently in the job queue will continue
 // to be dispatched to workers until the job queue is empty.
 func (d *Dispatcher) Stop() error {
-	close(d.jobQueue)
 	d.tomb.Kill(nil)
+	close(d.jobQueue)
 	return d.tomb.Wait()
 }
 
 // Enqueue adds a job to the job queue. If the queue is full, the function will block until the queue has slots
 // available. Panics if the dispatcher has been stopped.
-func (d *Dispatcher) Enqueue(job Job) {
+func (d *Dispatcher) Enqueue(job interface{}) {
 	d.jobQueue <- job
 }
 
-// TryEnqueue will try to enqueue a job, without blocking. It returns true if the job was enqueued, false if the job
-// queue is full and the job was unable to be enqueued.
-func (d *Dispatcher) TryEnqueue(job Job) bool {
+// TryEnqueue will try to enqueue a job, without blocking. It returns true if the job was enqueued, false otherwise.
+func (d *Dispatcher) TryEnqueue(job interface{}) bool {
 	select {
 	case d.jobQueue <- job:
 		return true
